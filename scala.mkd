@@ -1,0 +1,277 @@
+# Tutorial sobre Scala
+## Declaraciones
+### Declaración de variables
+Existen dos categorias de variables: inmutables y mutables. Las variables mutables son aquellas en las que es posible modificar el contenido de la variable. Las variables inmutables son aquellas en las que no es posible alterar el contenido de las variables, se recomienda el uso de esta ultima. La declaración del tipo de la variable es opcional, Scala es capaz de inferir el tipo del dato.
+~~~
+  //Variable inmutable
+  val a:Int=1
+  
+  //variable mutable
+  var b:Int=2
+~~~
+### Tipos de datos
+![Diagramas de tipos de datos](https://www.scala-lang.org/old/sites/default/files/images/classhierarchy.png)
+Siempre que se infiere un tipo en Scala, el tipo escogido será siempre el mas bajo posible en la jerarquía.
+
+Algunos tipos especiales:
+
+- **Any**: Es la clase de la que heredan todas las clases en Scala. Es la clase mas basica.
+- **AnyVal**: Es la clase padre de todas las clases que representan tipos primitivos.
+- **AnyRef**: Es la clase padre de todas las clases que no representan tipos primitivos. Todas las subclases de Scala y Java heredan de ella.
+- **ScalaObject**: Es la clase de la que heredan todas y solo las clases de Scala.
+- **Unit**: Equivale a `void`. Usar cuando una función no debe retornar ningún valor.
+- **Nothing**: Es la clase que hereda de todas las clases. Usar solo cuando no acaba la ejecución como en `While(true)`.
+
+### Declaración de funciones
+~~~
+  def funcion1(a:Int,b:Int):Int={
+      return a+b
+  }
+  def funcion2(a:Int,b:Int)={
+      a+b
+  }
+  def funcion3(a:Int,b:Int)=a+b
+~~~
+Al igual que con la declaración de variables no es obligatorio declarar el tipo devuelto por la función. Si no se declara una sentencia `return`, el valor de la ultima instrucción es el devuelto por la función.
+
+### Interpolación de cadenas
+La interpolación de cadenas consiste insertar el valor de una variable dentro de una cadena, tambien es posible usar expresiones. 
+~~~
+  val valor=1
+  val expresion=2
+  
+  println(s"El valor de la variable ${valor} y la expresion vale ${expresion+1}")
+~~~
+
+## Estructuras de selección
+### If/Else
+~~~
+  //Funciona igual que en Java
+  val verdad:Boolean=true;
+  
+  if (verdad){
+      println("Hola")
+  }else{
+      println("Adios") 
+  }
+~~~
+En Scala no existe la estructura `switch`, en su lugar existe lo conocido como *pattern matching*
+### Match
+~~~
+  val numero:Int=3
+  
+  val nombre=numero match{ //Puede ir dentro de la llamada a una funcion
+      case 1=> "Uno"
+      case 2=> "Dos"
+      case 3=> "Tres"
+      case _=> "Ninguno" //Es obligatorio incluir una clausula con _ que se ejecuta cuando no hay coincidencia
+  }
+  
+  println(nombre)
+~~~
+## Estructuras de repetición
+### Bucle *While*
+~~~
+  //Igual que en Java
+  var x=0
+  
+  while(x<5){
+      print(x)
+      x+=1
+  }
+~~~
+### Bucle *Do While*
+~~~
+  //Igual que en Java
+  var x=0
+  
+  do{
+      print(x)
+      x+=1
+  }while(x<5)
+~~~
+### Bucle *For*
+~~~
+  for(i<- 1 to 5){ //Hasta el limite inclusive
+      print(i)
+  }
+  
+  for(i<- 1 until 5){ //Hasta el limite exclusive
+      print(i)
+  }
+  
+  for(i <- List(1,2,3,4)){ //For para recorrer colecciones
+      print(i)
+  }
+~~~
+### *foreach*
+~~~
+  val lista=List(1,2,3,4)
+  
+  lista.foreach(x=> print(x)) //La funcion no devuelve nada y no modifica el conjunto
+~~~
+## Clases
+### Indicaciones previas
+Se deben declarar entre parentesis todos los atributos que vaya a usar la clase. Se pueden declarar otros constructores mediante la definición de this, pero siempre se debe llamar al constructor por defecto que es el que contiene todos los atributos.
+
+Los parametros de un constructor constituyen los atributos de la clase y son privados por defecto, si se desea que sean públicos, se debe agregar val (o var) en la declaracion del argumento. Tambien es posible declarar atributos dentro de la propia clase. Estos pueden llevar los modificadores de `public`, `private` o `readonly`.
+### Constructor por defecto
+//Declaracion de clases
+~~~
+  class Saludo(mensaje: String) { //Estos son los atributos y son accesibles desde cualquier metodo de la clase
+          
+      def diHola(nombre:String):Unit ={
+          println(mensaje+" "+nombre);
+      }
+  }
+  
+  val saludo = new Saludo("Hola")
+  saludo.diHola("Pepe")
+~~~
+### Constructor propio
+~~~
+  class OtroSaludo(m:String,nombre:String){ //Se deben declarar todos los atributos que se vayan a usar
+      
+      def this()={
+          this("Hola","Pepe") //Siempre se debe llamar al constructor por defecto
+      }
+      
+      def this(mensaje:String){
+          this("Hola","Jose")
+      }
+      
+      def saludar()={
+          println(this.m+" "+nombre)
+      }
+  
+  }
+  
+  val sal=new OtroSaludo()
+  sal.saludar()
+~~~
+### Herencia
+~~~
+  class Punto(var x:Int,var y:Int){
+      
+      def mover(dx:Int,dy:Int):Unit={
+          this.x=dx
+          this.y=dy
+      }
+  }
+  
+  class Particula(x:Int,y:Int,masa:Int) extends Punto(x:Int,y:Int){
+      
+      override def toString():String={ //Para redefinir un metodo de una clase padre agregar override
+          return s"X:${this.x} Y:${this.y} M:${this.masa}";
+      }
+      
+  }
+  
+  val particula=new Particula(0,0,0);
+  particula.mover(1,1)
+  println(particula.toString())
+~~~
+### Clases abstractas
+~~~
+  abstract class Figura(lado:Int){
+      
+      def getPerimetro():Double; //Metodo sin implementacion
+      
+      def printLado():Unit= println("El lado mide "+this.lado) //Metodo implementado
+  }
+  
+  class Cuadrado(lado:Int,n:Int) extends Figura(lado:Int){
+      
+      override def getPerimetro():Double={
+          return lado*lado;
+      }
+  }
+  
+  val figura:Figura=new Cuadrado(4,0)
+  println("El perimetro es "+figura.getPerimetro())
+  figura.printLado();
+~~~
+## Traits
+Son similares a las interfaces de otros lenguajes de programación. Sin embargo cuenta con dos principales diferencias respecto de las interfaces:
+- Pueden ser parcialmente implementadas como ocurre en las clases abstractas.
+- No pueden tener parametros en el constructor.
+~~~
+  trait Correo{
+      def enviar():Unit;
+      def recibir(mensaje:String):Unit={
+          println(s"Mensaje recibido: ${mensaje}")
+      }
+  }
+  
+  class CorreoPostal() extends Correo{
+      
+      override def enviar()={
+          println("Enviado desde correo postal")
+      }
+  }
+  
+  class CorreoElectronico(usuario:String) extends Correo{
+      
+      override def enviar()={
+          println(s"Enviado por ${usuario}")
+      }
+  }
+  
+  val carta:Correo=new CorreoPostal()
+  val email:Correo=new CorreoElectronico("pepe")
+  
+  carta.enviar()
+  carta.recibir("Hola desde carta")
+  
+  email.enviar()
+  email.recibir("Hola desde email")
+~~~
+## Colecciones
+Las colecciones por defecto incluidas son inmutables, no se puede agregar ni eliminar elementos. Las operaciones como *add* y similares lo que hacen es devolver una nueva colección con los nuevos elementos. Al crear la nueva colección se agregan las referencias de los objetos y por tanto casi no tiene penalización en tiempo de ejecución y en consumo de memoria.
+~~~
+  val lista=List(1,2,3) //Lista inmutable
+  0::lista //Devuelve una lista con el nuevo elemento insertado al principio
+  lista.head //Devuelve el primer elemento de la lista
+  lista.tail //Devuelve toda la lista excepto el primer elemento
+  lista:::lista //Concatena dos listas y devuelve el resultado
+~~~
+### Operaciones y funciones sobre conjuntos (y similares)
+~~~
+  val conjunto=Set(1,2,3)
+  
+  val conjunto2=conjunto.map(x => x+3) //Ejecuta la funcion que se le pasa a cada miembro de la coleccion
+  
+  val conjunto3=List(conjunto,conjunto2).flatten //Crea una nueva coleccion con los elementos de las sub-colecciones
+  
+  Set(1,4,9).flatMap { x => Set(x,x+1) } //FlatMap
+  
+  val lista=(List(1,2,3)++List(1,2,3))
+  lista.distinct //Devuelve una lista con todos los elementos distintos
+  
+  Set(1,2,3)(1) //Devuelve true si el elemento esta contenido en la coleccion, false en caso contrario
+  List(4,5,6)(1) //Devuelve el elemento de la posicion indicada
+  
+  val conjuntoImpares=conjunto.filter(x => x%2!=0) //Devuelve otro conjunto con los elementos que superen el filtro
+  
+  val escalar:Int=1
+  
+  //Para conjuntos inmutables
+  conjunto+escalar //Agrega el elemento al conjunto y devuelve una copia
+  conjunto++conjunto2 //Union de conjuntos
+  conjunto-escalar //Extrae del conjunto
+  conjunto--conjunto2 //Diferencia de conjuntos
+  conjunto&conjunto2 //Interseccion
+  
+  //Solo para conjuntos mutables
+  val conjuntoMutable=scala.collection.mutable.Set(1,2,3)
+  val conjuntoMutable2=scala.collection.mutable.Set(3,4,5)
+  
+  conjuntoMutable+= escalar //Agrega el valor al conjunto
+  conjuntoMutable++=conjuntoMutable2 //Agrega los elementos del segundo conjunto al primero
+  conjuntoMutable retain { x=> x%2==0} //Se queda solo con los elementos que cumplan la condicion
+~~~
+## Mapas
+Son estructuras *clave/valor* similares a los Mapas de Java o los diccionarios de Python.
+~~~
+  val mapa=Map(1->"Uno",2->"Dos",3->"Tres")
+~~~

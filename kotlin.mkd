@@ -1,0 +1,238 @@
+# Nociones basicas sobre Kotlin
+
+## Tipos de datos
+A diferencia de Java, donde existen tipos basicos como **int** o **char** y objetos que son instancias de una clase, en Kotlin todo es un objeto. Tampoco existe **void**, en su lugar existe la clase **Unit**, que debes usar cuando no vayas a retornar nada.
+
+### Variables mutables e inmutables
+Una variable se dice que es mutable cuando es posible cambiar su contenido. Si por el contrario es constante, se dice que es inmutable.
+~~~
+  var numero:Int=1
+  numero=2
+  val letra:Char='a'
+~~~
+### Comprobacion de tipos
+Es posible comprobar en tiempo de ejecución el tipo de una variable.
+~~~
+  1 is Int
+~~~
+### Conversion de tipos
+~~~
+  1.toByte() //Existen funciones similares para los demas tipos
+  "Hola mundo" as String //Casting
+~~~
+En Kotlin existe lo que se denomina *Smart casting*. Si la condición booleana para entrar a un trozo de código es que una variable sea de ese tipo, dentro de ese bloque de código no será necesario castearla.
+~~~
+  val a:String="Hola"
+  
+  if (a is String) {
+    val result = a.substring(1)
+  }
+~~~
+
+### Arrays
+~~~
+  var miArray=arrayOf(1,2,3,4) //Array inicializado con valores
+  var miArrayDeNulos=arrayOfNulls<Int>(10) //Array de 10 posiciones que solo admite enteros e inicializados todas a null
+~~~
+### Strings
+En Kotlin existen los strings multilinea que se consiguen entrecomillando 3 veces el string. Ademas existen los strings templates que permiten incluir el contenido de una variable dentro de un string.
+~~~
+  val cad1="""
+      Hola
+      Adios
+      """
+  //Eso incluye los tabuladores
+  
+  val nombre="Pepe"
+  
+  val cad2="Hola ${nombre}"
+  println("String literal: "+cad1)//Se usa concatenacion aunque no se debería usar
+  println("String template: "+cad2) //Se usa concatenacion aunque no se debería usar
+~~~
+### Operador Elvis
+~~~
+  val miVariable=10
+  miVariable?.toFloat() //Si es null, devuelve null
+  miVariable?.toFloat() ?: "Error" //Si es null, devuelve "Error"
+  miVariable!!.toFloat() //Estamos seguros de que no es null, si lo fuera lanza NullPointerException
+~~~
+## Null
+Existen algunos casos en los que se lanza un `NullPointerException`. Estos casos son los siguiente:
+
+- Llamada explicita a `NullPointerException`
+~~~
+  throw NullPointerException()
+~~~
+- Uso del operador `!!`
+~~~
+  val var1:String?=null
+  var1.toString() //Devuelve null si var1 es nulo
+  var1!!.toString() //Devuelve NullPointerException si var1 es nulo
+~~~
+- Código externo en Java. Si utilizas una librería escrita en Java es posible que esta lanze NullPointerException.
+- En Kotlin, existe el modificador `lateinit`. El uso de ese modificador puede ocasionar algunas inconsistencias en la inicialización y desembocar en un `NullPointerException`
+
+## Operadores de igualdad
+En Kotlin existen dos operadores para comprobar la igualdad entre dos objetos. El operador `==` que comprueba si dos objetos son iguales estructuralmente (equivalente a equals) y el operador `===` que comprueba si dos objetos referencian al mismo objeto.
+
+Si se desea usar el operador `==` se recomienda sobreescribir el método `equals(other: Any?)`.
+## Control de flujo
+En Kotlin no existe *switch*, en su lugar existe *when*
+~~~
+  var x=1
+  
+  when(x){
+      1->print("Vale uno") //Si vale 1
+      2,3->print("Vale dos o tres") //Si vale 2 ó 3
+      else->print("Vale otro") //Se ejecuta si no se ejecuta ningún otro. No es obligatorio
+  }
+~~~
+El valor devuelto en un *when* es posible almacenarlo en una variable. Esto se puede hacer siempre y cuando no se le pasen argumentos al *when*.
+~~~
+  val numero=1
+  
+  val esPar=when{
+      (numero % 2==0) -> true
+      else -> false
+  }
+~~~
+## Bucles
+~~~
+  val numbers=arrayOf(1,2,3,4,5)
+  
+  for(numero:Int in numbers){ //La especificación del tipo es opcional
+      print(numero)
+  }
+  
+  println() //Es para hacer salto de linea
+  
+  //Con indices
+  for((indice,numero) in numbers.withIndex()){
+      println("Indice: "+indice+" Valor: "+numero)
+  }
+~~~
+Los bucles *while* y *do while* son identicos a como se hacen en Java.
+## Modificadores de acceso
+En Kotlin si quieres que una clase sea heredada por otra debes declararla como `open`.
+## Herencia
+Para heredar de una clase `open`.
+~~~
+class Hijo:Padre
+~~~
+## Constructores
+En Kotlin toda clase tiene un constructor primario obligatorio y varios constructores secundarios opcionales.
+### Formas de declarar una clase
+~~~
+  class Clase1 //Sin atributos
+  
+  class Clase2 constructor(var atributo1:Int,val atributo2:String) //Se crea con esos atributos y son publicos
+  
+  class Clase3(var atributo1:Int,val atributo2:String) //constructor es opcional
+  
+  class Clase4(var atributo1:Int,val atributo2:String){
+      init{ //Este metodo se ejecuta despues del constructor primario y antes que los secundarios
+          atributo1=10 //En el se deben realizar las inicializaciones mas complejas
+      }
+  }
+  
+  class Clase5(var atributo1:Int=10,val atributo2:String="Hola") //Valores por defecto
+~~~
+
+### Instanciación de una clase
+~~~
+  val c1=Clase1() //Sin parametros
+  val c2=Clase2(10,"Hola") //Con todos los parametros
+  val c5=Clase5(atributo1=10) //Solo con parametros aobligatorios. Hay que especificar a que atributo se le pasa.
+~~~
+### Constructores secundarios
+~~~
+  //Permiten declarar constructores por defecto y que la clase tenga atributos por defecto
+  
+  class Clase6(val atributo1:String,val atributo2:String){
+      
+      constructor():this("Valor1","Valor2")
+  
+  }
+  
+  val c6=Clase6() //Contendrá "Valor1" y "Valor2"
+~~~
+### `val`, `var` ó nada en el constructor
+~~~
+  class Clase7(atributo:String){ //Si un parametro del constructor no lleva var ni val
+      init{
+          print(atributo) //Pero si podrá ser accedido por init
+      }
+  }
+  
+  val c7=Clase7("Hola")
+~~~
+### El uso de `field`
+~~~
+  //Si quieres redefinir los get y set de un atributo no puedes usar `this.atributo` debes usar `field`
+  //Solo podemos redefinir los getters y setters de atributos que NO hemos definido en el constructor
+  class UsoField{
+      var atributo:String="" //Es un atributo que no viene declarado en el constructor
+          get()=field.capitalize() //Por ejemplo si queremos capitalizarlo
+          set(valor){
+              field=valor.capitalize() //Si queremos capitalizarlo antes de asignarlo
+          }
+  }
+~~~
+## Herencia
+### Constructores heredados
+~~~
+  open class Punto{
+      constructor(x:Int,y:Int) //Notar que no hay que agregar val ni var
+  }
+  
+  class Particula:Punto{
+      constructor(x:Int,y:Int,masa:Int): super(x,y) //Notar que no hay que agregar val ni var
+  }
+~~~
+Si la clase hija contiene atributos con el mismo nombre que la clase padre, es necesario definir estos como *open* en la clase padre y sobreescribir estos atributos en la clase hija con *override*.
+~~~
+  open class Padre(open var atributo:String)
+  class Hijo(override var atributo:String):Padre(atributo)
+~~~
+### Clases abstractas
+Funcionan igual que en Java.
+## Data Classes
+Son clases equivalentes a los POJOs de Java. Para un buen uso se deben de cumplir unas serie de condiciones:
+- El constructor primario necesita tener al menos un parametro.
+- Todos los parametros del constructor deben estar marcados como *val* o *var*.
+- Las `Data classes` no pueden ser *abstract*, *open*, *sealed* o *inner*.
+
+Las *Data Classes* ya tienen implementaciones del método *toString()*. Tambien dispone de un método *copy()* que devuelve una copia del objeto en cuestión.
+~~~
+  data class Usuario(val nombre:String,var password:String)
+  
+  val usuario=Usuario("Pepe","perez")
+  val copiado=usuario.copy() //Copia con los mismos atributos
+  val copia=usuario.copy(nombre="Jose") //Copia pero con el atributo nombre cambiado
+  val (nombre,password)=copia //Destructuring
+~~~
+### Enumerados
+enum class Numeros{CERO,UNO,DOS,TRES,CUATRO}
+println(Numeros.UNO) //Devuelve el valor UNO
+println(Numeros.UNO.ordinal) //Devuelve la posicion dentro del enumerado
+println(Numeros.UNO.name) //Devuelve el nombre, en este caso UNO
+## Funciones como parámetros
+//Una forma
+~~~
+  fun printSum(n:Int,m:Int,printer:(result:Int)->Unit){
+      printer(n+m)
+  }
+  
+  printSum(2,2){ result->
+      println(result)
+  }
+~~~
+## Extension functions
+Permiten agregar métodos a una clase, pero solo dentro del contexto en el que son declarados.
+~~~
+  fun String.hola(){ //Agrega el método hola() a la clase String
+      println("Hola mundo")
+  }
+  
+  "".hola()
+~~~
