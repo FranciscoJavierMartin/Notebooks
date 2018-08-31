@@ -275,3 +275,19 @@ Son estructuras *clave/valor* similares a los Mapas de Java o los diccionarios d
 ~~~
   val mapa=Map(1->"Uno",2->"Dos",3->"Tres")
 ~~~
+## Call by value y call by name
+Cuando se llama por valor, se evalua la funcion y se pasa el valor retornado. Cuando se pasa el parametro por nombre, se pasa la función y esta es evaluada cada vez que se accede al parametro.
+~~~
+  def printByValue(x:Long):Unit={
+    println(x) //Same value printed for both instrucctions
+    println(x) //Same value printed for both instrucctions
+  }
+
+  def printByName(x: =>Long):Unit={
+    println(x) //Different value printed for both instrucctions
+    println(x) //Different value printed for both instrucctions
+  }
+
+  printByValue(System.nanoTime())
+  printByName(System.nanoTime())
+~~~
