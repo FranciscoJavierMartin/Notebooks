@@ -291,3 +291,14 @@ Cuando se llama por valor, se evalua la funcion y se pasa el valor retornado. Cu
   printByValue(System.nanoTime())
   printByName(System.nanoTime())
 ~~~
+
+## Operadores unarios
+Se pueden crear operadores unarios de la siguiente forma
+~~~
+  def unary_! : String = "Unary operator"
+~~~
+Y usarse de la siguiente forma
+~~~
+  print(!my_variable) // "Unary operator"
+~~~
+Solo admite + - ! ~ como operadores unarios
