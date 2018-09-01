@@ -302,3 +302,24 @@ Y usarse de la siguiente forma
   print(!my_variable) // "Unary operator"
 ~~~
 Solo admite + - ! ~ como operadores unarios
+
+## Herencia, colecciones y tipos genéricos
+Cuando una colección admite tipos genericos se pueden definir de tres formas
+
+### Covarianza
+~~~
+  List[+A]
+~~~
+Puedes agregar objetos que sean de la clase A o que hereden de ella.
+
+### Invarianza
+~~~
+  List[A]
+~~~
+Solo se pueden agregar objetos de la clase A
+
+### Contravarianza
+~~~
+  List[-A]
+~~~
+Admite cualquier objeto de clase A o que pertenezca a una superclase de A
