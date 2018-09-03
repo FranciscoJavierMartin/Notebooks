@@ -323,3 +323,27 @@ Solo se pueden agregar objetos de la clase A
   List[-A]
 ~~~
 Admite cualquier objeto de clase A o que pertenezca a una superclase de A
+
+## Manejo de errores
+
+~~~
+  def betterUnsafeMethod(): Try[String] = Failure(new RuntimeException)
+  def betterBackupMethod(): Try[String] = Success("A valid result")
+  val betterFallback=betterUnsafeMethod() orElse betterBackupMethod()
+  println(betterFallback)
+~~~
+
+## Option
+~~~
+if(h!=null)
+  if(p!=null)
+    return Connection.apply(h,p)
+
+ return null  
+~~~
+
+Es equivalente
+
+~~~
+  val connection=host.flatMap(h=>port.flatMap(p=>Connection.apply(h,p)))
+~~~
